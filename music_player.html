@@ -198,6 +198,28 @@
     0%, 100% { box-shadow: 0 0 0 0 rgba(226,71,43,0.35); }
     50% { box-shadow: 0 0 0 6px rgba(226,71,43,0); }
   }
+
+  .mic-toggle-btn[aria-pressed="true"]{
+    border-style:solid;
+    border-color:var(--led);
+    color:var(--led);
+  }
+  .mic-toggle-btn.requesting{
+    opacity:0.7;
+  }
+  input[type=checkbox]{
+    width:18px; height:18px;
+    accent-color: var(--brass);
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  input[type=checkbox]:disabled{ cursor:not-allowed; opacity:0.5; }
+  .mic-hint{
+    font-size:11px;
+    color:var(--text-dim);
+    line-height:1.8;
+    margin-top:6px;
+  }
   input[type=file]{
     position:absolute; width:1px; height:1px;
     padding:0; margin:-1px; overflow:hidden;
@@ -283,6 +305,7 @@
     background:#241a10;
     border-radius:2px;
     outline-offset:6px;
+    direction:ltr; /* رفع باگ کروم: اسلایدرهای داخل صفحه‌ی RTL هنگام درگ یا تنظیم گام‌به‌گام (از جمله ژست TalkBack) به‌درستی مقدار را تغییر نمی‌دهند */
   }
   input[type=range]::-webkit-slider-thumb{
     -webkit-appearance:none;
@@ -415,26 +438,32 @@
   <h2 class="section-label">تنظیمات صدا</h2>
   <div class="knobs">
     <div class="knob-block">
+      <label class="knob-label" id="volumeLabel" for="volumeKnob">میزان صدا</label>
+      <input type="range" id="volumeKnob" min="0" max="200" step="1" value="100"
+             aria-labelledby="volumeLabel" aria-valuemin="0" aria-valuemax="200" aria-valuenow="100" aria-valuetext="۱۰۰ درصد">
+      <div class="knob-value" id="volumeValue" aria-hidden="true">۱۰۰٪</div>
+    </div>
+    <div class="knob-block">
       <label class="knob-label" id="speedLabel" for="speedKnob">سرعت پخش</label>
-      <input type="range" id="speedKnob" min="0.5" max="2" step="0.05" value="1"
+      <input type="range" id="speedKnob" min="0.1" max="4" step="0.01" value="1"
              aria-labelledby="speedLabel" aria-valuetext="سرعت عادی">
       <div class="knob-value" id="speedValue" aria-hidden="true">×۱٫۰۰</div>
     </div>
     <div class="knob-block">
       <label class="knob-label" id="bassLabel" for="bassKnob">بیس (باس)</label>
-      <input type="range" id="bassKnob" min="-15" max="15" step="1" value="0"
+      <input type="range" id="bassKnob" min="-40" max="40" step="1" value="0"
              aria-labelledby="bassLabel" aria-valuetext="۰ دسی‌بل">
       <div class="knob-value" id="bassValue" aria-hidden="true">۰ dB</div>
     </div>
     <div class="knob-block">
       <label class="knob-label" id="midLabel" for="midKnob">میان‌باند (میدرنج)</label>
-      <input type="range" id="midKnob" min="-15" max="15" step="1" value="0"
+      <input type="range" id="midKnob" min="-40" max="40" step="1" value="0"
              aria-labelledby="midLabel" aria-valuetext="۰ دسی‌بل">
       <div class="knob-value" id="midValue" aria-hidden="true">۰ dB</div>
     </div>
     <div class="knob-block">
       <label class="knob-label" id="trebleLabel" for="trebleKnob">زیر (تربل)</label>
-      <input type="range" id="trebleKnob" min="-15" max="15" step="1" value="0"
+      <input type="range" id="trebleKnob" min="-40" max="40" step="1" value="0"
              aria-labelledby="trebleLabel" aria-valuetext="۰ دسی‌بل">
       <div class="knob-value" id="trebleValue" aria-hidden="true">۰ dB</div>
     </div>
@@ -444,19 +473,19 @@
   <div class="knobs">
     <div class="knob-block">
       <label class="knob-label" id="highpassLabel" for="highpassKnob">فیلتر بالاگذر (حذف بم)</label>
-      <input type="range" id="highpassKnob" min="20" max="2000" step="10" value="20"
+      <input type="range" id="highpassKnob" min="20" max="10000" step="10" value="20"
              aria-labelledby="highpassLabel" aria-valuetext="۲۰ هرتز">
       <div class="knob-value" id="highpassValue" aria-hidden="true">۲۰ Hz</div>
     </div>
     <div class="knob-block">
       <label class="knob-label" id="lowpassLabel" for="lowpassKnob">فیلتر پایین‌گذر (حذف زیر)</label>
-      <input type="range" id="lowpassKnob" min="500" max="20000" step="100" value="20000"
+      <input type="range" id="lowpassKnob" min="40" max="20000" step="10" value="20000"
              aria-labelledby="lowpassLabel" aria-valuetext="۲۰۰۰۰ هرتز">
       <div class="knob-value" id="lowpassValue" aria-hidden="true">۲۰۰۰۰ Hz</div>
     </div>
     <div class="knob-block">
       <label class="knob-label" id="distortionLabel" for="distortionKnob">اعوجاج (دیستورشن)</label>
-      <input type="range" id="distortionKnob" min="0" max="100" step="1" value="0"
+      <input type="range" id="distortionKnob" min="0" max="300" step="1" value="0"
              aria-labelledby="distortionLabel" aria-valuetext="۰ درصد">
       <div class="knob-value" id="distortionValue" aria-hidden="true">۰٪</div>
     </div>
@@ -475,7 +504,7 @@
         <label class="knob-label" id="reverbSizeLabel" for="reverbSizeKnob">اندازه فضا</label>
         <span class="knob-value" id="reverbSizeValue" aria-hidden="true">۰ ثانیه</span>
       </div>
-      <input type="range" id="reverbSizeKnob" min="0" max="5" step="0.1" value="0"
+      <input type="range" id="reverbSizeKnob" min="0" max="10" step="0.1" value="0"
              aria-labelledby="reverbSizeLabel" aria-valuetext="۰ ثانیه">
     </div>
     <div class="intensity-block">
@@ -483,7 +512,7 @@
         <label class="knob-label" id="reverbDecayLabel" for="reverbDecayKnob">واخش (افت بازتاب)</label>
         <span class="knob-value" id="reverbDecayValue" aria-hidden="true">۲٫۰</span>
       </div>
-      <input type="range" id="reverbDecayKnob" min="0.1" max="5" step="0.1" value="2"
+      <input type="range" id="reverbDecayKnob" min="0.1" max="15" step="0.1" value="2"
              aria-labelledby="reverbDecayLabel" aria-valuetext="۲٫۰">
     </div>
     <div class="intensity-block">
@@ -491,7 +520,7 @@
         <label class="knob-label" id="reverbToneLabel" for="reverbToneKnob">تن بازتاب</label>
         <span class="knob-value" id="reverbToneValue" aria-hidden="true">۰ dB</span>
       </div>
-      <input type="range" id="reverbToneKnob" min="-15" max="15" step="1" value="0"
+      <input type="range" id="reverbToneKnob" min="-40" max="40" step="1" value="0"
              aria-labelledby="reverbToneLabel" aria-valuetext="۰ دسی‌بل">
     </div>
     <div class="intensity-block">
@@ -511,7 +540,7 @@
         <label class="knob-label" id="delayTimeLabel" for="delayTimeKnob">زمان تأخیر</label>
         <span class="knob-value" id="delayTimeValue" aria-hidden="true">۰ میلی‌ثانیه</span>
       </div>
-      <input type="range" id="delayTimeKnob" min="0" max="100" step="1" value="0"
+      <input type="range" id="delayTimeKnob" min="0" max="200" step="1" value="0"
              aria-labelledby="delayTimeLabel" aria-valuetext="۰ میلی‌ثانیه">
     </div>
     <div class="intensity-block">
@@ -519,7 +548,7 @@
         <label class="knob-label" id="delayFeedbackLabel" for="delayFeedbackKnob">بازخورد اکو</label>
         <span class="knob-value" id="delayFeedbackValue" aria-hidden="true">۰٪</span>
       </div>
-      <input type="range" id="delayFeedbackKnob" min="0" max="90" step="5" value="0"
+      <input type="range" id="delayFeedbackKnob" min="0" max="98" step="1" value="0"
              aria-labelledby="delayFeedbackLabel" aria-valuetext="۰ درصد">
     </div>
     <div class="intensity-block">
@@ -539,7 +568,7 @@
         <label class="knob-label" id="tremoloRateLabel" for="tremoloRateKnob">سرعت ترمولو</label>
         <span class="knob-value" id="tremoloRateValue" aria-hidden="true">۵٫۰ هرتز</span>
       </div>
-      <input type="range" id="tremoloRateKnob" min="0.1" max="20" step="0.1" value="5"
+      <input type="range" id="tremoloRateKnob" min="0.1" max="50" step="0.1" value="5"
              aria-labelledby="tremoloRateLabel" aria-valuetext="۵٫۰ هرتز">
     </div>
     <div class="intensity-block">
@@ -562,12 +591,82 @@
            aria-labelledby="vocalLabel" aria-valuetext="۰ درصد">
   </div>
 
-  <button class="upload-btn export-btn" id="exportBtn" disabled aria-label="ذخیره‌ی آهنگ با افکت‌های فعلی اعمال‌شده">
+  <h2 class="section-label">میکروفون</h2>
+
+  <button type="button" class="upload-btn mic-toggle-btn" id="micToggleBtn" aria-pressed="false" aria-label="فعال‌سازی میکروفون و درخواست اجازه‌ی دسترسی">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/>
+    </svg>
+    <span id="micToggleLabel">فعال‌سازی میکروفون</span>
+  </button>
+  <div id="micStatus" role="status" style="text-align:center; font-size:12px; color:var(--text-dim); min-height:16px; margin-bottom:14px;"></div>
+
+  <div class="intensity-block" id="micMonitorBlock" style="margin-bottom:14px; opacity:0.4; transition:opacity .2s;">
+    <div class="intensity-row">
+      <label class="knob-label" for="micMonitorToggle" style="margin-bottom:0;">پخش صدای میکروفون از بلندگو (پایش زنده)</label>
+      <input type="checkbox" id="micMonitorToggle" disabled>
+    </div>
+    <div class="mic-hint">برای جلوگیری از جیغ بازخورد، ترجیحاً از هدفون استفاده کنید. صدای میکروفون همیشه در ضبط زنده ذخیره می‌شود، حتی اگر این گزینه خاموش باشد.</div>
+  </div>
+
+  <div class="knobs">
+    <div class="knob-block">
+      <label class="knob-label" id="micVolumeLabel" for="micVolumeKnob">میزان صدای میکروفون</label>
+      <input type="range" id="micVolumeKnob" min="0" max="300" step="5" value="100" disabled
+             aria-labelledby="micVolumeLabel" aria-valuetext="۱۰۰ درصد">
+      <div class="knob-value" id="micVolumeValue" aria-hidden="true">۱۰۰٪</div>
+    </div>
+    <div class="knob-block">
+      <label class="knob-label" id="micBassLabel" for="micBassKnob">بیس میکروفون</label>
+      <input type="range" id="micBassKnob" min="-40" max="40" step="1" value="0" disabled
+             aria-labelledby="micBassLabel" aria-valuetext="۰ دسی‌بل">
+      <div class="knob-value" id="micBassValue" aria-hidden="true">۰ dB</div>
+    </div>
+    <div class="knob-block">
+      <label class="knob-label" id="micMidLabel" for="micMidKnob">میان‌باند میکروفون</label>
+      <input type="range" id="micMidKnob" min="-40" max="40" step="1" value="0" disabled
+             aria-labelledby="micMidLabel" aria-valuetext="۰ دسی‌بل">
+      <div class="knob-value" id="micMidValue" aria-hidden="true">۰ dB</div>
+    </div>
+    <div class="knob-block">
+      <label class="knob-label" id="micTrebleLabel" for="micTrebleKnob">زیر میکروفون</label>
+      <input type="range" id="micTrebleKnob" min="-40" max="40" step="1" value="0" disabled
+             aria-labelledby="micTrebleLabel" aria-valuetext="۰ دسی‌بل">
+      <div class="knob-value" id="micTrebleValue" aria-hidden="true">۰ dB</div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="intensity-block">
+      <div class="intensity-row">
+        <label class="knob-label" id="micReverbLabel" for="micReverbKnob">بازتاب (ریوِرب) میکروفون</label>
+        <span class="knob-value" id="micReverbValue" aria-hidden="true">۰٪</span>
+      </div>
+      <input type="range" id="micReverbKnob" min="0" max="100" step="5" value="0" disabled
+             aria-labelledby="micReverbLabel" aria-valuetext="۰ درصد">
+    </div>
+    <div class="intensity-block">
+      <div class="intensity-row">
+        <label class="knob-label" id="micEchoLabel" for="micEchoKnob">اکو میکروفون</label>
+        <span class="knob-value" id="micEchoValue" aria-hidden="true">۰٪</span>
+      </div>
+      <input type="range" id="micEchoKnob" min="0" max="100" step="5" value="0" disabled
+             aria-labelledby="micEchoLabel" aria-valuetext="۰ درصد">
+    </div>
+  </div>
+
+  <button class="upload-btn export-btn" id="liveRecordBtn" disabled aria-label="ضبط زنده‌ی موزیک همراه با صدای میکروفون">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>
+    <span id="liveRecordBtnLabel">ضبط زنده (موزیک + میکروفون)</span>
+  </button>
+  <div id="liveRecordStatus" role="status" style="text-align:center; font-size:12px; color:var(--text-dim); min-height:16px; margin-top:6px;"></div>
+
+  <button class="upload-btn export-btn" id="exportBtn" disabled aria-label="ذخیره‌ی آهنگ با افکت‌های فعلی اعمال‌شده، بدون میکروفون">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
       <path d="M17 21v-8H7v8M7 3v5h8"/>
     </svg>
-    <span id="exportBtnLabel">ذخیره با افکت‌های فعلی</span>
+    <span id="exportBtnLabel">ذخیره با افکت‌های موزیک (بدون میکروفون)</span>
   </button>
 
   <div id="exportStatus" style="text-align:center; font-size:12px; color:var(--text-dim); min-height:16px; margin-top:6px;"></div>
@@ -600,6 +699,8 @@
   const barFill = document.getElementById('barFill');
   const currentTimeEl = document.getElementById('currentTime');
   const durationEl = document.getElementById('duration');
+  const volumeKnob = document.getElementById('volumeKnob');
+  const volumeValue = document.getElementById('volumeValue');
   const speedKnob = document.getElementById('speedKnob');
   const speedValue = document.getElementById('speedValue');
   const bassKnob = document.getElementById('bassKnob');
@@ -709,23 +810,34 @@
     return impulse;
   }
 
+  // Creates the shared AudioContext once, whether it's first triggered by
+  // loading a track or by enabling the microphone. Both the music graph and
+  // the microphone graph live on this same context so they can be mixed
+  // together (for live monitoring and for the live recording tap).
+  function ensureAudioCtx(){
+    if(!audioCtx){
+      // 'playback' latency hint = bigger internal buffer = far more resistant
+      // to the audio-thread hiccups that cause crackling, especially over
+      // headphones/Bluetooth. Costs a small amount of extra delay, which is
+      // irrelevant for music playback.
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'playback' });
+
+      // force true stereo output so both of the phone's speakers (or both
+      // headphone channels) are always used, instead of leaving it to
+      // whatever channel count the device happens to default to
+      try{
+        const maxCh = audioCtx.destination.maxChannelCount || 2;
+        audioCtx.destination.channelCount = Math.min(2, maxCh);
+        audioCtx.destination.channelCountMode = 'explicit';
+        audioCtx.destination.channelInterpretation = 'speakers';
+      }catch(e){ /* not critical if unsupported */ }
+    }
+    return audioCtx;
+  }
+
   function setupAudioGraph(){
     if(wired) return;
-    // 'playback' latency hint = bigger internal buffer = far more resistant
-    // to the audio-thread hiccups that cause crackling, especially over
-    // headphones/Bluetooth. Costs a small amount of extra delay, which is
-    // irrelevant for music playback.
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'playback' });
-
-    // force true stereo output so both of the phone's speakers (or both
-    // headphone channels) are always used, instead of leaving it to
-    // whatever channel count the device happens to default to
-    try{
-      const maxCh = audioCtx.destination.maxChannelCount || 2;
-      audioCtx.destination.channelCount = Math.min(2, maxCh);
-      audioCtx.destination.channelCountMode = 'explicit';
-      audioCtx.destination.channelInterpretation = 'speakers';
-    }catch(e){ /* not critical if unsupported */ }
+    ensureAudioCtx();
 
     sourceNode = audioCtx.createMediaElementSource(audio);
 
@@ -854,7 +966,7 @@
     reverbOut.gain.value = 1;
 
     // --- echo / delay (parallel dry/wet with feedback loop) ---
-    delayNode = audioCtx.createDelay(1.001);
+    delayNode = audioCtx.createDelay(2.001);
     delayNode.delayTime.value = getDelayMs() / 1000;
 
     feedbackGain = audioCtx.createGain();
@@ -883,7 +995,7 @@
     pannerNode.pan.value = parseInt(panKnob.value, 10) / 100;
 
     masterBus = audioCtx.createGain();
-    masterBus.gain.value = 0.85;
+    masterBus.gain.value = 0.85 * (parseInt(volumeKnob.value, 10) / 100);
 
     compressor = audioCtx.createDynamicsCompressor();
     compressor.threshold.value = -10;
@@ -933,6 +1045,11 @@
     masterBus.connect(compressor);
     compressor.connect(limiter);
     limiter.connect(audioCtx.destination);
+
+    // If the microphone (or a live recording) was set up before this track
+    // finished loading, tap the final music mix into that same recording
+    // destination so the live recording always captures the full mix.
+    if(recDest) limiter.connect(recDest);
 
     if(parseFloat(reverbSizeKnob.value) > 0){
       convolver.buffer = generateImpulse(audioCtx, parseFloat(reverbSizeKnob.value), parseFloat(reverbDecayKnob.value));
@@ -1099,6 +1216,338 @@
     }
   });
 
+  // ---------- Microphone ----------
+  const micToggleBtn = document.getElementById('micToggleBtn');
+  const micToggleLabel = document.getElementById('micToggleLabel');
+  const micStatusEl = document.getElementById('micStatus');
+  const micMonitorBlock = document.getElementById('micMonitorBlock');
+  const micMonitorToggle = document.getElementById('micMonitorToggle');
+  const micVolumeKnob = document.getElementById('micVolumeKnob');
+  const micVolumeValue = document.getElementById('micVolumeValue');
+  const micBassKnob = document.getElementById('micBassKnob');
+  const micBassValue = document.getElementById('micBassValue');
+  const micMidKnob = document.getElementById('micMidKnob');
+  const micMidValue = document.getElementById('micMidValue');
+  const micTrebleKnob = document.getElementById('micTrebleKnob');
+  const micTrebleValue = document.getElementById('micTrebleValue');
+  const micReverbKnob = document.getElementById('micReverbKnob');
+  const micReverbValue = document.getElementById('micReverbValue');
+  const micEchoKnob = document.getElementById('micEchoKnob');
+  const micEchoValue = document.getElementById('micEchoValue');
+  const liveRecordBtn = document.getElementById('liveRecordBtn');
+  const liveRecordBtnLabel = document.getElementById('liveRecordBtnLabel');
+  const liveRecordStatus = document.getElementById('liveRecordStatus');
+
+  const micControlEls = [micVolumeKnob, micBassKnob, micMidKnob, micTrebleKnob, micReverbKnob, micEchoKnob, micMonitorToggle];
+
+  let micStream = null, micActive = false;
+  let micSource, micHPFilter, micBassFilter, micMidFilter, micTrebleFilter,
+      micDry, micConvolver, micWetGain, micReverbOut,
+      micDelay, micFeedback, micEchoWet, micEchoOut,
+      micGainNode, micMonitorGate;
+  let recDest = null;
+
+  // Lazily creates the MediaStreamDestination used to capture the "live
+  // recording" (music + mic together). Whichever of setupAudioGraph() /
+  // setupMicChain() runs *after* this exists reconnects into it too (see
+  // the "if(recDest)" checks in both of those), so it works no matter which
+  // order the person loads a track / enables the mic in.
+  function ensureRecordDestination(){
+    if(!audioCtx) return null;
+    if(!recDest){
+      recDest = audioCtx.createMediaStreamDestination();
+      if(limiter) limiter.connect(recDest);
+      if(micGainNode) micGainNode.connect(recDest);
+    }
+    return recDest;
+  }
+
+  async function enableMic(){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      micStatusEl.textContent = 'مرورگر شما از دسترسی به میکروفون پشتیبانی نمی‌کند.';
+      announce(micStatusEl.textContent);
+      return;
+    }
+    // getUserMedia is only available in secure contexts (HTTPS, or
+    // localhost while testing) - surfacing this clearly up front avoids a
+    // confusing silent failure on devices/browsers that enforce it.
+    if(!window.isSecureContext){
+      micStatusEl.textContent = 'برای استفاده از میکروفون، این صفحه باید از طریق HTTPS (یا localhost) باز شود.';
+      announce(micStatusEl.textContent);
+      return;
+    }
+    micToggleBtn.disabled = true;
+    micToggleBtn.classList.add('requesting');
+    micStatusEl.textContent = 'در حال درخواست اجازه‌ی دسترسی به میکروفون...';
+    announce(micStatusEl.textContent);
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true }
+      });
+      setupMicChain(stream);
+      micActive = true;
+      micToggleBtn.setAttribute('aria-pressed','true');
+      micToggleLabel.textContent = 'غیرفعال‌سازی میکروفون';
+      micStatusEl.textContent = 'میکروفون فعال است. برای شنیدن صدای خودتان از بلندگو، «پایش زنده» را روشن کنید.';
+      micMonitorBlock.style.opacity = '1';
+      micControlEls.forEach(el => el.disabled = false);
+      announce('میکروفون فعال شد');
+    }catch(err){
+      let msg = 'دسترسی به میکروفون ممکن نشد.';
+      if(err && err.name === 'NotAllowedError') msg = 'اجازه‌ی دسترسی به میکروفون داده نشد. لطفاً از تنظیمات مرورگر یا سیستم اجازه دهید و دوباره تلاش کنید.';
+      else if(err && err.name === 'NotFoundError') msg = 'هیچ میکروفونی روی این دستگاه پیدا نشد.';
+      else if(err && err.name === 'NotReadableError') msg = 'میکروفون در حال حاضر توسط برنامه‌ی دیگری استفاده می‌شود.';
+      else if(err && err.name === 'SecurityError') msg = 'دسترسی به میکروفون به دلایل امنیتی مسدود شد.';
+      micStatusEl.textContent = msg;
+      announce(msg);
+    }finally{
+      micToggleBtn.disabled = false;
+      micToggleBtn.classList.remove('requesting');
+    }
+  }
+
+  // Builds the mic's own effect chain, mirroring the music chain's style
+  // (EQ -> reverb -> echo) but kept independent so mic effects never touch
+  // the music knobs or vice versa. The chain fans out to two places:
+  // micMonitorGate -> destination (audible playback, gated by the "پایش
+  // زنده" checkbox so it's silent/no-feedback-risk by default) and,
+  // separately and unconditionally, into the live-recording destination
+  // (if one exists yet) so the recording always includes the mic.
+  function setupMicChain(stream){
+    ensureAudioCtx();
+    micStream = stream;
+    micSource = audioCtx.createMediaStreamSource(stream);
+
+    micHPFilter = audioCtx.createBiquadFilter();
+    micHPFilter.type = 'highpass';
+    micHPFilter.frequency.value = 80; // trims handling rumble / pops
+    micHPFilter.Q.value = 0.7;
+
+    micBassFilter = audioCtx.createBiquadFilter();
+    micBassFilter.type = 'lowshelf';
+    micBassFilter.frequency.value = 200;
+    micBassFilter.gain.value = parseFloat(micBassKnob.value);
+
+    micMidFilter = audioCtx.createBiquadFilter();
+    micMidFilter.type = 'peaking';
+    micMidFilter.frequency.value = 1000;
+    micMidFilter.Q.value = 1;
+    micMidFilter.gain.value = parseFloat(micMidKnob.value);
+
+    micTrebleFilter = audioCtx.createBiquadFilter();
+    micTrebleFilter.type = 'highshelf';
+    micTrebleFilter.frequency.value = 3000;
+    micTrebleFilter.gain.value = parseFloat(micTrebleKnob.value);
+
+    micDry = audioCtx.createGain();
+    micDry.gain.value = 1;
+
+    micConvolver = audioCtx.createConvolver();
+    micConvolver.buffer = generateImpulse(audioCtx, 1.8, 2.4);
+
+    micWetGain = audioCtx.createGain();
+    micWetGain.gain.value = parseInt(micReverbKnob.value, 10) / 100;
+
+    micReverbOut = audioCtx.createGain();
+    micReverbOut.gain.value = 1;
+
+    micDelay = audioCtx.createDelay(1.0);
+    micDelay.delayTime.value = 0.28;
+
+    micFeedback = audioCtx.createGain();
+    micFeedback.gain.value = 0.22;
+
+    micEchoWet = audioCtx.createGain();
+    micEchoWet.gain.value = parseInt(micEchoKnob.value, 10) / 100;
+
+    micEchoOut = audioCtx.createGain();
+    micEchoOut.gain.value = 1;
+
+    micGainNode = audioCtx.createGain();
+    micGainNode.gain.value = parseInt(micVolumeKnob.value, 10) / 100;
+
+    micMonitorGate = audioCtx.createGain();
+    micMonitorGate.gain.value = micMonitorToggle.checked ? 1 : 0;
+
+    micSource.connect(micHPFilter);
+    micHPFilter.connect(micBassFilter);
+    micBassFilter.connect(micMidFilter);
+    micMidFilter.connect(micTrebleFilter);
+
+    micTrebleFilter.connect(micDry);
+    micTrebleFilter.connect(micConvolver);
+    micConvolver.connect(micWetGain);
+    micDry.connect(micReverbOut);
+    micWetGain.connect(micReverbOut);
+
+    micReverbOut.connect(micEchoOut);
+    micReverbOut.connect(micDelay);
+    micDelay.connect(micFeedback);
+    micFeedback.connect(micDelay);
+    micDelay.connect(micEchoWet);
+    micEchoWet.connect(micEchoOut);
+
+    micEchoOut.connect(micGainNode);
+    micGainNode.connect(micMonitorGate);
+    micMonitorGate.connect(audioCtx.destination);
+
+    // Always feed the recording tap, independent of the monitor toggle.
+    if(recDest) micGainNode.connect(recDest);
+  }
+
+  function disableMic(){
+    if(micStream){
+      micStream.getTracks().forEach(t => t.stop());
+    }
+    [micSource, micHPFilter, micBassFilter, micMidFilter, micTrebleFilter, micDry, micConvolver, micWetGain,
+     micReverbOut, micDelay, micFeedback, micEchoWet, micEchoOut, micGainNode, micMonitorGate].forEach(node=>{
+      try{ node && node.disconnect(); }catch(e){}
+    });
+    micStream = null;
+    micActive = false;
+    micToggleBtn.setAttribute('aria-pressed','false');
+    micToggleLabel.textContent = 'فعال‌سازی میکروفون';
+    micStatusEl.textContent = 'میکروفون غیرفعال شد.';
+    micMonitorBlock.style.opacity = '0.4';
+    micControlEls.forEach(el => el.disabled = true);
+    announce('میکروفون غیرفعال شد');
+  }
+
+  micToggleBtn.addEventListener('click', ()=>{
+    if(micActive) disableMic(); else enableMic();
+  });
+
+  micMonitorToggle.addEventListener('change', ()=>{
+    if(!micMonitorGate || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    micMonitorGate.gain.setTargetAtTime(micMonitorToggle.checked ? 1 : 0, now, 0.05);
+    announce(micMonitorToggle.checked ? 'پایش زنده‌ی میکروفون روشن شد' : 'پایش زنده‌ی میکروفون خاموش شد');
+  });
+
+  micVolumeKnob.addEventListener('input', ()=>{
+    const v = parseInt(micVolumeKnob.value, 10);
+    if(micGainNode) micGainNode.gain.setTargetAtTime(v/100, audioCtx.currentTime, 0.02);
+    micVolumeValue.textContent = toPersianDigits(v) + '٪';
+    micVolumeKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} درصد`);
+  });
+
+  micBassKnob.addEventListener('input', ()=>{
+    const v = parseFloat(micBassKnob.value);
+    if(micBassFilter) micBassFilter.gain.setTargetAtTime(v, audioCtx.currentTime, 0.02);
+    micBassValue.textContent = toPersianDigits((v>0?'+':'') + v) + ' dB';
+    micBassKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} دسی‌بل`);
+  });
+
+  micMidKnob.addEventListener('input', ()=>{
+    const v = parseFloat(micMidKnob.value);
+    if(micMidFilter) micMidFilter.gain.setTargetAtTime(v, audioCtx.currentTime, 0.02);
+    micMidValue.textContent = toPersianDigits((v>0?'+':'') + v) + ' dB';
+    micMidKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} دسی‌بل`);
+  });
+
+  micTrebleKnob.addEventListener('input', ()=>{
+    const v = parseFloat(micTrebleKnob.value);
+    if(micTrebleFilter) micTrebleFilter.gain.setTargetAtTime(v, audioCtx.currentTime, 0.02);
+    micTrebleValue.textContent = toPersianDigits((v>0?'+':'') + v) + ' dB';
+    micTrebleKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} دسی‌بل`);
+  });
+
+  micReverbKnob.addEventListener('input', ()=>{
+    const v = parseInt(micReverbKnob.value, 10);
+    if(micWetGain) micWetGain.gain.setTargetAtTime(v/100, audioCtx.currentTime, 0.03);
+    micReverbValue.textContent = toPersianDigits(v) + '٪';
+    micReverbKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} درصد`);
+  });
+
+  micEchoKnob.addEventListener('input', ()=>{
+    const v = parseInt(micEchoKnob.value, 10);
+    if(micEchoWet) micEchoWet.gain.setTargetAtTime(v/100, audioCtx.currentTime, 0.02);
+    micEchoValue.textContent = toPersianDigits(v) + '٪';
+    micEchoKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} درصد`);
+  });
+
+  // ---------- Live recording (music + microphone together, in real time) ----------
+  // Unlike the offline "ذخیره با افکت‌های موزیک" export below (which
+  // decodes and renders the file instantly, with no live input), this
+  // actually plays the track and records the real-time output - the only
+  // way to capture a live microphone performance along with it.
+  let liveRecorder = null, liveChunks = [], liveRecording = false, lastLiveUrl = null;
+
+  function pickLiveMimeType(){
+    const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/ogg'];
+    for(const type of candidates){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) return type;
+    }
+    return '';
+  }
+
+  async function startLiveRecording(){
+    if(!window.MediaRecorder){
+      liveRecordStatus.textContent = 'ضبط زنده در این مرورگر پشتیبانی نمی‌شود.';
+      announce(liveRecordStatus.textContent);
+      return;
+    }
+    if(playlist.length === 0){
+      liveRecordStatus.textContent = 'ابتدا یک آهنگ بارگذاری کنید.';
+      announce(liveRecordStatus.textContent);
+      return;
+    }
+    ensureAudioCtx();
+    if(!wired) setupAudioGraph();
+    if(audioCtx.state === 'suspended') await audioCtx.resume();
+    ensureRecordDestination();
+
+    const mimeType = pickLiveMimeType();
+    try{
+      liveRecorder = mimeType ? new MediaRecorder(recDest.stream, { mimeType }) : new MediaRecorder(recDest.stream);
+    }catch(e){
+      liveRecordStatus.textContent = 'شروع ضبط زنده ممکن نشد.';
+      announce(liveRecordStatus.textContent);
+      return;
+    }
+    liveChunks = [];
+    liveRecorder.addEventListener('dataavailable', (e)=>{
+      if(e.data && e.data.size > 0) liveChunks.push(e.data);
+    });
+    liveRecorder.addEventListener('stop', ()=>{
+      const blob = new Blob(liveChunks, { type: liveRecorder.mimeType || 'audio/webm' });
+      if(lastLiveUrl) URL.revokeObjectURL(lastLiveUrl);
+      lastLiveUrl = URL.createObjectURL(blob);
+      const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
+      const baseName = (filenameEl.textContent || 'recording').replace(/\.[^.]+$/, '');
+      const a = document.createElement('a');
+      a.href = lastLiveUrl;
+      a.download = `${baseName}-with-mic.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      liveRecordStatus.textContent = 'ضبط زنده ذخیره شد.';
+      announce('ضبط زنده ذخیره و دانلود شد');
+    });
+
+    liveRecorder.start();
+    liveRecording = true;
+    liveRecordBtn.classList.add('recording');
+    liveRecordBtnLabel.textContent = 'توقف ضبط زنده';
+    liveRecordStatus.textContent = micActive
+      ? 'در حال ضبط زنده... موزیک را پخش کنید و صحبت کنید.'
+      : 'در حال ضبط زنده‌ی موزیک... (میکروفون فعال نیست)';
+    announce('ضبط زنده آغاز شد');
+
+    if(audio.paused) audio.play().catch(()=>{});
+  }
+
+  function stopLiveRecording(){
+    if(liveRecorder && liveRecorder.state !== 'inactive') liveRecorder.stop();
+    liveRecording = false;
+    liveRecordBtn.classList.remove('recording');
+    liveRecordBtnLabel.textContent = 'ضبط زنده (موزیک + میکروفون)';
+  }
+
+  liveRecordBtn.addEventListener('click', ()=>{
+    if(liveRecording) stopLiveRecording(); else startLiveRecording();
+  });
+
   // ---------- Playlist ----------
   let playlist = []; // {name, url}
   let currentIndex = -1;
@@ -1151,7 +1600,7 @@
     fallbackPlayerWrap.hidden = true;
     playlist = files.map(f => ({ name:f.name, url:URL.createObjectURL(f) }));
     setupAudioGraph();
-    [playBtn, exportBtn].forEach(b => b.disabled = false);
+    [playBtn, exportBtn, liveRecordBtn].forEach(b => b.disabled = false);
     loadTrack(0, false);
     announce(`${toPersianDigits(files.length)} فایل بارگذاری شد`);
   });
@@ -1181,7 +1630,7 @@
       const objUrl = URL.createObjectURL(blob);
       playlist = [{ name, url: objUrl }];
       setupAudioGraph();
-      [playBtn, exportBtn].forEach(b => b.disabled = false);
+      [playBtn, exportBtn, liveRecordBtn].forEach(b => b.disabled = false);
       loadTrack(0, false);
       urlStatus.textContent = `«${name}» با موفقیت بارگذاری شد — همه‌ی افکت‌ها روی آن کار می‌کنند`;
       announce('آهنگ از لینک با موفقیت بارگذاری شد');
@@ -1224,6 +1673,7 @@
       loadTrack(currentIndex + 1, true);
     } else {
       announce('پخش فهرست به پایان رسید');
+      if(liveRecording) stopLiveRecording();
     }
   });
 
@@ -1264,6 +1714,31 @@
     else if(e.key === 'End')        audio.currentTime = audio.duration;
     else handled = false;
     if(handled) e.preventDefault();
+  });
+
+  volumeKnob.addEventListener('input', ()=>{
+    const v = parseInt(volumeKnob.value, 10);
+    if(masterBus && audioCtx) masterBus.gain.setTargetAtTime(0.85 * (v/100), audioCtx.currentTime, 0.02);
+    fallbackAudio.volume = v/100;
+    volumeValue.textContent = toPersianDigits(v) + '٪';
+    volumeKnob.setAttribute('aria-valuenow', String(v));
+    volumeKnob.setAttribute('aria-valuetext', `${toPersianDigits(v)} درصد`);
+  });
+
+  // پشتیبان: اگر به هر دلیلی حرکت لمسی/سوایپ صفحه‌خوان روی این اسلایدر خاص
+  // به‌درستی ثبت نشود، حرکت با کلید (که کروم معمولاً برای ژست «تنظیم مقدار»
+  // صفحه‌خوان هم تولید می‌کند) همچنان مقدار را جابه‌جا می‌کند.
+  volumeKnob.addEventListener('keydown', (e)=>{
+    const step = 1;
+    const v = parseInt(volumeKnob.value, 10);
+    let nv = null;
+    if(e.key === 'ArrowUp' || e.key === 'ArrowRight') nv = Math.min(200, v + step);
+    else if(e.key === 'ArrowDown' || e.key === 'ArrowLeft') nv = Math.max(0, v - step);
+    if(nv !== null && nv !== v){
+      volumeKnob.value = nv;
+      volumeKnob.dispatchEvent(new Event('input', {bubbles:true}));
+      e.preventDefault();
+    }
   });
 
   speedKnob.addEventListener('input', ()=>{
@@ -1476,7 +1951,7 @@
       convolver.buffer = generateImpulse(ctx, reverbSize, parseFloat(reverbDecayKnob.value));
     }
 
-    const delayNode = ctx.createDelay(1.001);
+    const delayNode = ctx.createDelay(2.001);
     delayNode.delayTime.value = getDelayMs() / 1000;
     const feedbackGain = ctx.createGain(); feedbackGain.gain.value = parseInt(delayFeedbackKnob.value, 10) / 100;
     const echoWetGain = ctx.createGain(); echoWetGain.gain.value = parseInt(delayMixKnob.value, 10) / 100;
@@ -1491,7 +1966,7 @@
     const pannerNode = ctx.createStereoPanner();
     pannerNode.pan.value = parseInt(panKnob.value, 10) / 100;
 
-    const masterBus = ctx.createGain(); masterBus.gain.value = 0.85;
+    const masterBus = ctx.createGain(); masterBus.gain.value = 0.85 * (parseInt(volumeKnob.value, 10) / 100);
 
     const compressor = ctx.createDynamicsCompressor();
     compressor.threshold.value = -10; compressor.knee.value = 24; compressor.ratio.value = 3;
